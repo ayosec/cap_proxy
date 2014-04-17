@@ -2,14 +2,14 @@ require "test_suite"
 require "logger"
 require "socket"
 
-describe ProxyHandler do
+describe CapProxy::Server do
 
   before :all do
     sem = Semaphore.new(2)
 
     logger = Logger.new(STDOUT)
     logger.level = Logger::ERROR
-    @proxy = ProxyHandler.new(logger, "localhost", 50300, URI.parse("http://localhost:50301"))
+    @proxy = CapProxy::Server.new(logger, "localhost", 50300, URI.parse("http://localhost:50301"))
 
     Thread.new do
       sem.signal
