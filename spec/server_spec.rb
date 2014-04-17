@@ -1,4 +1,4 @@
-require "test_suite"
+require "spec_helper"
 require "logger"
 require "socket"
 
