@@ -2,22 +2,18 @@ require "test_suite"
 require "logger"
 require "socket"
 
-class BasicProxyTest < Test::Unit::TestCase
+describe ProxyHandler do
 
-  def logger
-    Logger.new(STDOUT).tap do |log|
-      log.level = Logger::ERROR
-    end
-  end
-
-  def test_proxy
-
+  before :all do
     sem = Semaphore.new(2)
 
+    logger = Logger.new(STDOUT)
+    logger.level = Logger::ERROR
+    @proxy = ProxyHandler.new(logger, "localhost", 50300, URI.parse("http://localhost:50301"))
+
     Thread.new do
-      proxy = ProxyHandler.new(logger, "localhost", 50300, URI.parse("http://localhost:50301"))
       sem.signal
-      proxy.run!
+      @proxy.run!
     end
 
     server = Thread.new do
@@ -31,11 +27,22 @@ class BasicProxyTest < Test::Unit::TestCase
     end
 
     sem.wait
+  end
 
+  after :all do
+    EM.stop
+  end
+
+  it "should proxy basic HTTP requests" do
     conn = TCPSocket.new("localhost", 50300)
     conn.write("GET / HTTP/1.0\r\n\r\n")
-    assert_equal "TCPServer\n", conn.read
+    received = conn.read
 
+    received.should == "TCPServer\n"
+  end
+
+  it "should capture requests" do
+    pending
   end
 
 end

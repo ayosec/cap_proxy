@@ -1,4 +1,4 @@
-require "test/unit"
+require "rspec"
 require "thread"
 require_relative "../lib/cap_proxy/proxy_handler"
 

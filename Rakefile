@@ -1,10 +1,9 @@
 
-desc "Launch all tests"
-task :test do
-  $LOAD_PATH.unshift "#{Dir.pwd}/test"
-  Dir["#{File.dirname __FILE__}/test/*_test.rb"].each do |test_file|
-    require test_file
-  end
+require "rspec/core/rake_task"
+
+RSpec::Core::RakeTask.new do |t|
+  t.pattern = "spec/**/*_spec.rb"
+  t.ruby_opts = ["-Itest"]
 end
 
-task :default => :test
+task :default => :spec
