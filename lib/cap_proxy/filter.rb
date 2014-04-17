@@ -1,5 +1,3 @@
-require "http_parser"
-
 module CapProxy
 
   class InvalidFilterParam < RuntimeError; end

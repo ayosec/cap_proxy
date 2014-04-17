@@ -1,7 +1,6 @@
 require "rspec"
 require "thread"
 require_relative "../lib/cap_proxy/server"
-require_relative "../lib/cap_proxy/filter"
 
 class Semaphore
   def initialize(initial)
