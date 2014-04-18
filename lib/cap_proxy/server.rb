@@ -13,6 +13,10 @@ module CapProxy
       @proxy_port = proxy_port
       @proxy_host = proxy_host
       @target = target
+      reset_filters!
+    end
+
+    def reset_filters!
       @filters = ThreadSafe::Array.new
     end
 

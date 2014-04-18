@@ -29,6 +29,10 @@ describe CapProxy::Server do
     sem.wait
   end
 
+  before :each do
+    @proxy.reset_filters!
+  end
+
   after :all do
     EM.stop
   end
@@ -64,6 +68,21 @@ describe CapProxy::Server do
     resp = proxy_req!("PUT / HTTP/1.0\r\n\r\n")
     resp.should =~ %r[\AHTTP/1.1 200 OK\r\n]
     resp.should include("x-foo: that\r\n")
+  end
+
+  it "should use a custom filter" do
+    class CaptureAll < CapProxy::Filter
+      def apply?(request)
+        true
+      end
+    end
+
+    @proxy.capture(CaptureAll.new) do |client, request|
+      client.respond 200, {}, "-captured-"
+    end
+
+    proxy_req!("PUT / HTTP/1.0\r\n\r\n").should include("-captured-")
+    proxy_req!("GET /foo HTTP/1.0\r\n\r\n").should include("-captured-")
   end
 
 
