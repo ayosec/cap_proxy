@@ -36,15 +36,8 @@ module CapProxy
     end
 
     def run!
-      EM.run do
-        EM.error_handler do |error|
-          STDERR.puts error
-          STDERR.puts error.backtrace.map {|l| "\t#{l}" }
-        end
-
-        log.info "Proxy bind to #{proxy_host}:#{proxy_port}"
-        EM.start_server proxy_host, proxy_port, Client, self
-      end
+      log.info "CapProxy: Listening on #{proxy_host}:#{proxy_port}"
+      EM.start_server proxy_host, proxy_port, Client, self
     end
 
   end

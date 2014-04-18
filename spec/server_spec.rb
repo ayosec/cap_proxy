@@ -1,40 +1,11 @@
 require "spec_helper"
-require "logger"
-require "socket"
 
 describe CapProxy::Server do
 
-  before :all do
-    sem = Semaphore.new(2)
-
-    logger = Logger.new(STDERR)
-    logger.level = Logger::ERROR
-    @proxy = CapProxy::Server.new(logger, "localhost", 50300, URI.parse("http://localhost:50301"))
-
-    Thread.new do
-      sem.signal
-      @proxy.run!
+  around :each do |test|
+    CapProxy::TestWrapper.run(test, "localhost", 50300, "http://localhost:50301") do |proxy|
+      @proxy = proxy
     end
-
-    server = Thread.new do
-      socket = TCPServer.new(50301)
-      sem.signal
-      loop do
-        client = socket.accept
-        client.puts "TCPServer"
-        client.close
-      end
-    end
-
-    sem.wait
-  end
-
-  before :each do
-    @proxy.reset_filters!
-  end
-
-  after :all do
-    EM.stop
   end
 
   def proxy_req!(packet)
