@@ -1,0 +1,10 @@
+language: ruby
+bundler_args: --binstubs
+script: bin/rspec -f doc
+rvm:
+  - 1.9.3
+  - 2.0.0
+  - 2.1.0
+  - rbx
+  - ruby-head
+  - jruby-head
