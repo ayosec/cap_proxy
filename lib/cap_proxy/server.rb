@@ -6,13 +6,18 @@ require_relative "filter"
 module CapProxy
   class Server
 
-    attr_reader :proxy_port, :proxy_host, :target, :log, :filters
+    attr_reader :proxy_port, :proxy_host, :target_host, :target_port, :log, :filters
 
-    def initialize(log, proxy_host, proxy_port, target)
+    def initialize(bind_address, target, log = nil)
+
+      proxy_host, proxy_port = bind_address.split(":", 2)
+      target_host, target_port = target.split(":", 2)
+
       @log = log
       @proxy_port = proxy_port
       @proxy_host = proxy_host
-      @target = target
+      @target_host = target_host
+      @target_port = target_port
       reset_filters!
     end
 
@@ -36,7 +41,7 @@ module CapProxy
     end
 
     def run!
-      log.info "CapProxy: Listening on #{proxy_host}:#{proxy_port}"
+      log.info "CapProxy: Listening on #{proxy_host}:#{proxy_port}" if log
       EM.start_server proxy_host, proxy_port, Client, self
     end
 

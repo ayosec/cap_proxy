@@ -6,7 +6,8 @@ require "net/http"
 describe CapProxy::Server do
 
   around :each do |test|
-    CapProxy::TestWrapper.run(test, "localhost", 50300, simple_responder: 50301) do |proxy|
+    CapProxy::TestWrapper.run(test, "localhost:50300", "localhost:50301") do |proxy|
+      EM.start_server "localhost", 50301, CapProxy::TestWrapper::SimpeResponder
       @proxy = proxy
     end
   end

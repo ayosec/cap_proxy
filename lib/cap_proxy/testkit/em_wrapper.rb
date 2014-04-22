@@ -13,11 +13,7 @@ module CapProxy
       end
     end
 
-    def self.run(test, proxy_host, proxy_port, target_url)
-
-      if target_url.kind_of?(String)
-        target_url = URI.parse(target_url)
-      end
+    def self.run(test, bind_address, target)
 
       EM.run do
 
@@ -28,17 +24,10 @@ module CapProxy
           STDERR.puts error.backtrace.map {|l| "\t#{l}" }
         end
 
-        if target_url.kind_of?(Hash) and target_url[:simple_responder]
-          port = target_url[:simple_responder]
-          target_url = "http://localhost:#{port}"
-          EM.start_server "localhost", port, SimpeResponder
-        end
-
         logger = Logger.new(STDERR)
         logger.level = Logger::ERROR
-        proxy = Server.new(logger, proxy_host, proxy_port, target_url)
+        proxy = Server.new(bind_address, target, logger)
         proxy.run!
-
 
         if block_given?
           yield proxy

@@ -47,11 +47,11 @@ module CapProxy
       parser = @http_parser
       filter = server.filters.find {|f| f[:filter].apply?(parser) }
 
-      server.log.info "#{parser.http_method} #{parser.request_url} - #{filter ? "filtered" : "raw"}"
+      server.log.info "#{parser.http_method} #{parser.request_url} - #{filter ? "filtered" : "raw"}" if server.log
       if filter
         filter[:handler].call self, parser
       else
-        @remote = EM.connect(server.target.hostname, server.target.port, RemoteConnection, self)
+        @remote = EM.connect(server.target_host, server.target_port, RemoteConnection, self)
         @remote.send_data @data
         @data = nil
         @http_parser = nil

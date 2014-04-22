@@ -9,7 +9,8 @@ module CapProxy
     end
 
     def receive_data(data)
-      proxy_connection.server.log.debug("Closing #{proxy_connection.head}")
+      log = proxy_connection.server.log
+      log.debug("Closing #{proxy_connection.head}") if log
       proxy_connection.send_data data
     end
 
