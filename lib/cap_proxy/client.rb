@@ -1,5 +1,5 @@
 require "eventmachine"
-require "http_parser"
+require "http/parser"
 require_relative "remote_connection"
 require_relative "http_codes"
 
@@ -11,7 +11,7 @@ module CapProxy
       @server = server
       @remote = nil
       @data = nil
-      @http_parser = HTTP::RequestParser.new
+      @http_parser = HTTP::Parser.new
 
       @http_parser.on_headers_complete = proc do
         verify_headers!

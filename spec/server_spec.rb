@@ -6,7 +6,7 @@ require "net/http"
 describe CapProxy::Server do
 
   around :each do |test|
-    CapProxy::TestWrapper.run(test, "localhost", 50300, "http://localhost:50301") do |proxy|
+    CapProxy::TestWrapper.run(test, "localhost", 50300, simple_responder: 50301) do |proxy|
       @proxy = proxy
     end
   end
@@ -14,7 +14,7 @@ describe CapProxy::Server do
   def proxy_req!(packet)
     conn = TCPSocket.new("localhost", 50300)
     conn.write(packet)
-    response = conn.read(1024)
+    response = conn.read(512)
     conn.close
     response
   end

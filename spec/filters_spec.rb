@@ -5,7 +5,7 @@ describe CapProxy::Filter do
   context "Filters from hashes" do
 
     def hash_filter?(hash, request)
-      parser = HTTP::RequestParser.new
+      parser = HTTP::Parser.new
       parser << request
 
       filter = CapProxy::Filter.from_hash(hash)
