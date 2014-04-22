@@ -1,7 +1,7 @@
 require "eventmachine"
 require "http_parser"
-require "thin"
-require_relative "./remote_connection"
+require_relative "remote_connection"
+require_relative "http_codes"
 
 module CapProxy
   class Client < EM::Connection
@@ -24,14 +24,22 @@ module CapProxy
       end
     end
 
-    def respond(status, headers, body)
-      resp = Thin::Response.new
-      resp.status = status
-      resp.headers = headers
-      resp.body = body
-      resp.each do |chunk|
-        send_data chunk
+    def write_head(status, headers)
+      head = [ "HTTP/1.1 #{status} #{HTTPCodes[status]}\r\n" ]
+
+      if headers
+        headers.each_pair do |key, value|
+          head << "#{key}: #{value}\r\n"
+        end
       end
+
+      head << "\r\n"
+      send_data head.join
+    end
+
+    def respond(status, headers, body = nil)
+      write_head(status, headers)
+      send_data(body) if body
       close_connection_after_writing
     end
 
@@ -64,13 +72,7 @@ module CapProxy
     end
 
     def chunks_start(status, headers = {})
-      resp = Thin::Response.new
-      resp.status = status
-      resp.headers = headers.merge("Transfer-Encoding" => "chunked")
-      resp.body = []
-      resp.each do |chunk|
-        send_data chunk
-      end
+      write_head(status, headers.merge("Transfer-Encoding" => "chunked"))
     end
 
     def chunks_send(data)
