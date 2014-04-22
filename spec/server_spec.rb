@@ -1,4 +1,7 @@
+# coding: utf-8
+
 require "spec_helper"
+require "net/http"
 
 describe CapProxy::Server do
 
@@ -56,5 +59,21 @@ describe CapProxy::Server do
     proxy_req!("GET /foo HTTP/1.0\r\n\r\n").should include("-captured-")
   end
 
+  it "should manage chunked responsed" do
+    @proxy.capture(method: "get") do |client, request|
+      client.chunks_start 201, "content-type" => "text/foo"
+      EM.add_timer(0.1) { client.chunks_send([-30, -100, -108, 97].pack("c*")) }
+      EM.add_timer(0.3) { client.chunks_send("abc") }
+      EM.add_timer(0.5) { client.chunks_finish }
+    end
+
+    start_time = Time.now.to_f
+    resp = Net::HTTP.get_response(URI("http://localhost:50300"))
+    resp.code.should == "201"
+    resp["Content-Type"].should == "text/foo"
+    resp.body.bytes.to_a.should == "✔aabc".bytes.to_a
+
+    (Time.now.to_f - start_time).should >= 0.5
+  end
 
 end

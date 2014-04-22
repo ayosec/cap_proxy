@@ -63,5 +63,26 @@ module CapProxy
       end
     end
 
+    def chunks_start(status, headers = {})
+      resp = Thin::Response.new
+      resp.status = status
+      resp.headers = headers.merge("Transfer-Encoding" => "chunked")
+      resp.body = []
+      resp.each do |chunk|
+        send_data chunk
+      end
+    end
+
+    def chunks_send(data)
+      send_data "#{data.bytesize.to_s(16)}\r\n"
+      send_data data
+      send_data "\r\n"
+    end
+
+    def chunks_finish
+      send_data "0\r\n\r\n"
+      close_connection_after_writing
+    end
+
   end
 end
