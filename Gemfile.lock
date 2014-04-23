@@ -1,11 +1,17 @@
+PATH
+  remote: .
+  specs:
+    cap_proxy (0.1.0)
+      eventmachine (~> 1.0.3)
+      http_parser.rb
+      thread_safe
+
 GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.1.3)
     eventmachine (1.0.3)
-    eventmachine (1.0.3-java)
     http_parser.rb (0.5.3)
-    http_parser.rb (0.5.3-java)
     rake (10.3.0)
     rspec (2.12.0)
       rspec-core (~> 2.12.0)
@@ -16,15 +22,12 @@ GEM
       diff-lcs (~> 1.1.3)
     rspec-mocks (2.12.2)
     thread_safe (0.3.3)
-    thread_safe (0.3.3-java)
 
 PLATFORMS
   java
   ruby
 
 DEPENDENCIES
-  eventmachine (~> 1.0.3)
-  http_parser.rb
+  cap_proxy!
   rake (~> 10.3.0)
   rspec
-  thread_safe
