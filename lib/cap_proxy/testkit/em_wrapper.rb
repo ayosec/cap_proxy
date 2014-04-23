@@ -6,7 +6,7 @@ module CapProxy
 
   module TestWrapper
 
-    class SimpeResponder < EM::Connection
+    class SimpleResponder < EM::Connection
       def receive_data(_)
         send_data "TCPServer\n"
         close_connection_after_writing
