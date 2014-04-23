@@ -38,7 +38,7 @@ module CapProxy
     end
 
     def apply?(request)
-      raise NotImplementedError.new("apply? have to be implemented by inherited classes")
+      raise NotImplementedError.new("apply? has to be implemented by inherited classes")
     end
   end
 
