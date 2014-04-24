@@ -1,6 +1,8 @@
+require "./lib/cap_proxy/version"
+
 Gem::Specification.new do |s|
   s.name        = "cap_proxy"
-  s.version     = "0.1.0"
+  s.version     = CapProxy::VERSION
   s.licenses    = ["MIT"]
   s.summary     = "HTTP Proxy with ability to capture and manipulate requests."
   s.description = "HTTP proxy with the ability to capture requests and generate a fake response. It is *not* intended to use in production environments, but only in integration tests." 
