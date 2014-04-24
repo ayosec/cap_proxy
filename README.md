@@ -4,7 +4,7 @@
 
 HTTP proxy with the ability to capture requests and generate a fake response. It is *not* intended to use in production environments, but only in integration tests.
 
-It is tested in Ruby MRI (1.9, 2.0, 2.1), JRuby and Rubinius. Check out the [Travis page](https://travis-ci.org/ayosec/cap_proxy) to see the current status on every platform.
+It is tested in Ruby MRI (1.9, 2.0, 2.1) and Rubinius. Check out the [Travis page](https://travis-ci.org/ayosec/cap_proxy) to see the current status on every platform. We plan to support JRuby when some concurrency issues are managed.
 
 ## Usage
 
