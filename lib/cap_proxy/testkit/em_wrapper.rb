@@ -1,5 +1,4 @@
 require "eventmachine"
-require "uri"
 require "logger"
 
 module CapProxy
@@ -13,32 +12,41 @@ module CapProxy
       end
     end
 
-    def self.run(test, bind_address, target)
+    def self.run(example, bind_address, target)
+      em_init = Queue.new
+      example_finished = EM::Queue.new
 
-      EM.run do
+      Thread.new do
+        EM.run do
+          EM.error_handler do |error|
+            STDERR.puts error
+            STDERR.puts error.backtrace.map {|l| "\t#{l}" }
+          end
 
-        proxy = nil
+          logger = Logger.new(STDERR)
+          logger.level = Logger::ERROR
+          proxy = Server.new(bind_address, target, logger)
+          proxy.run!
 
-        EM.error_handler do |error|
-          STDERR.puts error
-          STDERR.puts error.backtrace.map {|l| "\t#{l}" }
+          example_finished.pop do |q|
+            EM.stop_event_loop
+            q.push(nil)
+          end
+
+          em_init.push(proxy)
         end
-
-        logger = Logger.new(STDERR)
-        logger.level = Logger::ERROR
-        proxy = Server.new(bind_address, target, logger)
-        proxy.run!
-
-        if block_given?
-          yield proxy
-        end
-
-        Thread.new do
-          test.run
-        end
-        EM.stop_event_loop
       end
 
+      proxy = em_init.pop
+      if block_given?
+        yield proxy
+      end
+
+      example.run
+
+      q = Queue.new
+      example_finished.push(q)
+      q.pop
     end
   end
 
